@@ -45,6 +45,9 @@
                                 @error('photo')
                                 <p class="text-danger small mt-2">{{ $message }}</p>
                                 @enderror
+                                @error('photo.*')
+                                <p class="text-danger small mt-2">{{ $message }}</p>
+                                @enderror
                             </div>
 
 
@@ -68,6 +71,17 @@
                             </div>
 
                         </form>
+
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
 
 
 

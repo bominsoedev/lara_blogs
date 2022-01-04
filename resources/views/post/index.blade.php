@@ -39,6 +39,7 @@
                             <tr>
                                 <th>#</th>
                                 <th class="w-25">Title</th>
+                                <th>photo</th>
                                 <th>Category</th>
                                 <th>Owner</th>
                                 <th>Control</th>
@@ -52,10 +53,18 @@
                                         <td>{{ $post->id }}</td>
                                         <td>{{ Str::words($post->title,15) }}</td>
                                         <td>
+                                            @forelse($post->photo as $photo)
+                                                <img src="{{ asset('storage/thumbnail/'.$photo->name) }}" height="40" alt="">
+                                            @empty
+                                                <p></p>
+                                            @endforelse
+                                        </td>
+                                        <td>
                                             <span class="badge bg-primary">
                                                 {{ $post->category->title }}
                                             </span>
                                         </td>
+
                                         <td>{{ $post->user->name }}</td>
                                         <td>
                                             <div class="btn-group">

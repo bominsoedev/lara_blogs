@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Photo;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
+
 
 class PostController extends Controller
 {
@@ -50,13 +53,18 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
 
-        return $request;
 
         $request->validate([
             "title" => "required|min:3|unique:posts,title",
             "category"=> "required|exists:categories,id",
-            "description"=> "required|min:10"
+            "description"=> "required|min:10",
+            "photo" => "required",
+            "photo.*" => "file|mimes:jpeg,png|max:5000"
         ]);
+
+
+//        return $request;
+
 
         $post = new Post();
         $post->title = $request->title;
@@ -68,7 +76,29 @@ class PostController extends Controller
         $post->isPublish = '1';
         $post->save();
 
-        return redirect()->route('post.index')->with("status","aung p aung p aung p");
+        if($request->hasFile('photo')){
+
+            foreach ($request->file('photo') as $photo){
+
+                $newName = uniqid()."_photo.".$photo->extension();
+                $photo->storeAs('public/photo',$newName);
+
+
+                $img = Image::make($photo);
+                $img->fit(200,200);
+                $img->save("storage/thumbnail/".$newName,100);
+
+                $photo = new Photo();
+                $photo->name = $newName;
+                $photo->post_id = $post->id;
+                $photo->user_id = Auth::id();
+                $photo->save();
+            }
+
+        }
+
+
+        return redirect()->route('post.index')->with("status","Post Created");
 
     }
 
