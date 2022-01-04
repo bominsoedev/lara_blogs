@@ -6,6 +6,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -17,8 +18,12 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::when(request()->search,function ($query){
-            $query->where('title','like','%'.request()->search.'%');
+        $posts = Post::when(isset(request()->search),function ($query){
+
+            $keyword = request()->search;
+
+            $query->orWhere('title','like','%'.$keyword.'%')->orWhere('description','like',"%$keyword%");
+
         })->with(['user','category'])->latest("id")->paginate(7);
 //        return $posts;
         return view('post.index',compact('posts'));
@@ -73,7 +78,8 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+
+        return view('post.show',compact('post'));
     }
 
     /**
@@ -84,7 +90,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return view('post.edit',compact('post'));
     }
 
     /**

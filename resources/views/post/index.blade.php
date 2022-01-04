@@ -20,7 +20,7 @@
 
 
                             <div class="d-flex justify-content-between">
-                                {{ $posts->links() }}
+                                {{ $posts->appends(request()->all())->links() }}
                                 <div class="">
                                     <form>
                                         <div class="input-group mb-3">
@@ -59,10 +59,10 @@
                                         <td>{{ $post->user->name }}</td>
                                         <td>
                                             <div class="btn-group">
-                                                <a class="btn btn-sm btn-outline-primary">
+                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('post.show',$post->id) }}">
                                                     <i class="fas fa-info fa-fw"></i>
                                                 </a>
-                                                <a class="btn btn-sm btn-outline-primary">
+                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('post.edit',$post->id) }}">
                                                     <i class="fas fa-pencil-alt fa-fw"></i>
                                                 </a>
                                                 <button form="deletePost{{$post->id}}" class="btn btn-sm btn-outline-primary">
