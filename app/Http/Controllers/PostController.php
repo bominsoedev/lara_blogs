@@ -50,6 +50,8 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
 
+        return $request;
+
         $request->validate([
             "title" => "required|min:3|unique:posts,title",
             "category"=> "required|exists:categories,id",
@@ -102,7 +104,22 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $request->validate([
+            "title" => "required|min:3|unique:posts,title,".$post->id,
+            "category"=> "required|exists:categories,id",
+            "description"=> "required|min:10"
+        ]);
+
+
+        $post->title = $request->title;
+        $post->slug = Str::slug($request->title);
+        $post->category_id = $request->category;
+        $post->description = $request->description;
+        $post->excerpt = Str::words($request->description,20);
+
+        $post->update();
+
+        return redirect()->route('post.index')->with("status","post updated");
     }
 
     /**

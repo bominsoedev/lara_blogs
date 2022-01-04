@@ -14,7 +14,7 @@
 
                             <p class="alert alert-success">{{ session('status') }}</p>
                         @endif
-                        <form action="{{ route('post.store') }}" class="mb-3" method="post">
+                        <form action="{{ route('post.store') }}" class="mb-3" method="post" enctype="multipart/form-data">
                             @csrf
 
 
@@ -35,6 +35,14 @@
                                     @endforeach
                                 </select>
                                 @error('category')
+                                <p class="text-danger small mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Photo</label>
+                                <input type="file" name="photo[]" value="{{ old('photo') }}" class="form-control @error('photo') is-invalid @enderror" multiple>
+                                @error('photo')
                                 <p class="text-danger small mt-2">{{ $message }}</p>
                                 @enderror
                             </div>

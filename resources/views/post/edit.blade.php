@@ -11,19 +11,19 @@
                     </div>
                     <div class="card-body">
 
-                        {{ $post }}
+{{--                        {{ $post }}--}}
 
                         @if(session('status'))
 
                             <p class="alert alert-success">{{ session('status') }}</p>
                         @endif
-                        <form action="{{ route('post.store') }}" class="mb-3" method="post">
+                        <form action="{{ route('post.update',$post->id) }}" class="mb-3" method="post">
                             @csrf
-
+                            @method('put')
 
                             <div class="mb-3">
                                 <label>Post Title</label>
-                                <input type="text" name="title" value="{{ old('title') }}" class="form-control @error('title') is-invalid @enderror">
+                                <input type="text" name="title" value="{{ old('title',$post->title) }}" class="form-control @error('title') is-invalid @enderror">
                                 @error('title')
                                 <p class="text-danger small mt-2">{{ $message }}</p>
                                 @enderror
@@ -34,7 +34,7 @@
                                 <label>Post Title</label>
                                 <select type="text" name="category"  class="form-select @error('category') is-invalid @enderror">
                                     @foreach(\App\Models\Category::all() as $category)
-                                        <option value="{{ $category->id }}" {{ old('category') ==  $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
+                                        <option value="{{ $category->id }}" {{ old('category',$post->category_id) ==  $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
                                     @endforeach
                                 </select>
                                 @error('category')
@@ -45,7 +45,7 @@
 
                             <div class="mb-3">
                                 <label>Description</label>
-                                <textarea type="text" name="description" rows="10" class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                                <textarea type="text" name="description" rows="10" class="form-control @error('description') is-invalid @enderror">{{ old('description',$post->description) }}</textarea>
                                 @error('description')
                                 <p class="text-danger small mt-2">{{ $message }}</p>
                                 @enderror
@@ -59,7 +59,7 @@
                                         Confirm
                                     </label>
                                 </div>
-                                <button class="btn btn-primary">Add Post</button>
+                                <button class="btn btn-primary">Update Post</button>
                             </div>
 
                         </form>
