@@ -54,9 +54,12 @@
                                         <td>{{ Str::words($post->title,15) }}</td>
                                         <td>
                                             @forelse($post->photo as $photo)
-                                                <img src="{{ asset('storage/thumbnail/'.$photo->name) }}" height="40" alt="">
+                                                <a class="my-link" data-gall="gall{{ $post->id }}" href="{{ asset('storage/photo/'.$photo->name) }}">
+                                                    <img src="{{ asset('storage/thumbnail/'.$photo->name) }}" height="40" alt="image alt"/>
+                                                </a>
+
                                             @empty
-                                                <p></p>
+                                               <p class="text-muted small">No Photo</p>
                                             @endforelse
                                         </td>
                                         <td>

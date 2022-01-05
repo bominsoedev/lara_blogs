@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.4",
-        "mms-fiw-fiw": "^1.0.1"
+        "mms-fiw-fiw": "^1.0.1",
+        "venobox": "^2.0.4"
     }
 }

@@ -7,7 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Photo;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
@@ -62,6 +62,10 @@ class PostController extends Controller
             "photo.*" => "file|mimes:jpeg,png|max:5000"
         ]);
 
+        if(!Storage::exists("public/thumbnail")){
+            Storage::makeDirectory("public/thumbnail");
+        }
+
 
 //        return $request;
 
@@ -96,6 +100,8 @@ class PostController extends Controller
             }
 
         }
+
+//        return $request;
 
 
         return redirect()->route('post.index')->with("status","Post Created");

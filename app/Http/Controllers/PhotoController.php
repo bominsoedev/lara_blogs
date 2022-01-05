@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePhotoRequest;
 use App\Http\Requests\UpdatePhotoRequest;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class PhotoController extends Controller
 {
@@ -36,7 +39,38 @@ class PhotoController extends Controller
      */
     public function store(StorePhotoRequest $request)
     {
-        //
+
+        $request->validate([
+            "photo" => "required",
+            "photo.*" => "file|mimes:jpeg,png|max:5000"
+        ]);
+
+        if(!Storage::exists("public/thumbnail")){
+            Storage::makeDirectory("public/thumbnail");
+        }
+
+        if($request->hasFile('photo')){
+
+            foreach ($request->file('photo') as $photo){
+
+                $newName = uniqid()."_photo.".$photo->extension();
+                $photo->storeAs('public/photo',$newName);
+
+
+                $img = Image::make($photo);
+                $img->fit(200,200);
+                $img->save("storage/thumbnail/".$newName,100);
+
+                $photo = new Photo();
+                $photo->name = $newName;
+                $photo->post_id = $request->post_id;
+                $photo->user_id = Auth::id();
+                $photo->save();
+            }
+
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -81,6 +115,7 @@ class PhotoController extends Controller
      */
     public function destroy(Photo $photo)
     {
-        //
+        $photo->delete();
+        return redirect()->back();
     }
 }
