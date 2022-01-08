@@ -82,7 +82,7 @@
                             <div class="d-inline-flex justify-content-center align-items-center border border-dark border-3 px-3 rounded" id="uploaderUi">
                                 <i class="fas fa-plus-circle fa-2x"></i>
                             </div>
-                            @forelse($post->photo as $photo)
+                            @forelse($post->photos as $photo)
                                 <div class="d-inline-block position-relative" style="width: 100px;height: 100px">
                                     <img src="{{ asset('storage/thumbnail/'.$photo->name) }}" class="position-absolute" height="100" alt="">
                                     <form action="{{ route('photo.destroy',$photo->id) }}" method="post">

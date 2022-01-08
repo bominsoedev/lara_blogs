@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Photo;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -21,14 +22,17 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::when(isset(request()->search),function ($query){
+        $posts = Post::when(Auth::user()->role == 1,function ($query){
+            $query->where("user_id",Auth::id());
+        })
+        ->when(isset(request()->search),function ($query){
 
             $keyword = request()->search;
 
             $query->orWhere('title','like','%'.$keyword.'%')->orWhere('description','like',"%$keyword%");
 
-        })->with(['user','category'])->latest("id")->paginate(7);
-//        return $posts;
+        })->with(['user','category','photos'])->latest("id")->paginate(7);
+
         return view('post.index',compact('posts'));
 
     }
@@ -40,7 +44,7 @@ class PostController extends Controller
      */
     public function create()
     {
-
+        Gate::authorize('create', Post::class);
         return view('post.create');
     }
 
@@ -54,14 +58,6 @@ class PostController extends Controller
     {
 
 
-        $request->validate([
-            "title" => "required|min:3|unique:posts,title",
-            "category"=> "required|exists:categories,id",
-            "description"=> "required|min:10",
-            "photo" => "required",
-            "photo.*" => "file|mimes:jpeg,png|max:5000"
-        ]);
-
         if(!Storage::exists("public/thumbnail")){
             Storage::makeDirectory("public/thumbnail");
         }
@@ -72,7 +68,7 @@ class PostController extends Controller
 
         $post = new Post();
         $post->title = $request->title;
-        $post->slug = Str::slug($request->title);
+        $post->slug = $request->title;
         $post->category_id = $request->category;
         $post->description = $request->description;
         $post->excerpt = Str::words($request->description,20);
@@ -116,7 +112,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-
+        return $post;
         return view('post.show',compact('post'));
     }
 
@@ -128,7 +124,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+
+        Gate::authorize('view',$post);
         return view('post.edit',compact('post'));
+
     }
 
     /**
@@ -140,15 +139,10 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        $request->validate([
-            "title" => "required|min:3|unique:posts,title,".$post->id,
-            "category"=> "required|exists:categories,id",
-            "description"=> "required|min:10"
-        ]);
 
 
         $post->title = $request->title;
-        $post->slug = Str::slug($request->title);
+        $post->slug = $request->title;
         $post->category_id = $request->category;
         $post->description = $request->description;
         $post->excerpt = Str::words($request->description,20);
@@ -166,7 +160,19 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        Gate::authorize('delete',$post);
+
+        foreach ($post->photos as $photo){
+            Storage::delete('public/photo/'.$photo->name);
+            Storage::delete('public/thumbnail/'.$photo->name);
+        }
+
+        // delete db records
+        $post->photos()->delete();
+
+        // post delete
         $post->delete();
+
         return redirect()->route('post.index')->with("status","aung p aung p aung p");
     }
 }

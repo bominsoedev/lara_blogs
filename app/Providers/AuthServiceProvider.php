@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -27,8 +29,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('post-edit',function ($post){
-            return $post->user_id == Auth::id();
-        });
+
     }
 }
