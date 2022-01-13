@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 
-class UpdatePostRequest extends FormRequest
+class UpdateTagRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +13,7 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::authorize('update',$this->route('post'));
+        return false;
     }
 
     /**
@@ -25,9 +24,7 @@ class UpdatePostRequest extends FormRequest
     public function rules()
     {
         return [
-            "title" => "required|min:3|unique:posts,title,".$this->route('post')->id,
-            "category"=> "required|exists:categories,id",
-            "description"=> "required|min:10"
+            //
         ];
     }
 }

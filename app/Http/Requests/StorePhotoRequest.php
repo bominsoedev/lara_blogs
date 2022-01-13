@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StorePhotoRequest extends FormRequest
 {
@@ -13,7 +15,6 @@ class StorePhotoRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
     }
 
     /**
@@ -24,7 +25,7 @@ class StorePhotoRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+
         ];
     }
 }

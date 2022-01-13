@@ -41,7 +41,9 @@
                                 <th class="w-25">Title</th>
                                 <th>photo</th>
                                 <th>Category</th>
+                                @if(Auth::user()->role == 0)
                                 <th>Owner</th>
+                                @endif
                                 <th>Control</th>
                                 <th>Created_at</th>
                             </tr>
@@ -51,9 +53,9 @@
                                 @forelse($posts as $post)
                                     <tr>
                                         <td>{{ $post->id }}</td>
-                                        <td>{{ Str::words($post->title,15) }}</td>
+                                        <td>{{ $post->title }}</td>
                                         <td>
-                                            @forelse($post->photo as $photo)
+                                            @forelse($post->photos()->latest('id')->limit(3)->get() as $photo)
                                                 <a class="my-link" data-gall="gall{{ $post->id }}" href="{{ asset('storage/photo/'.$photo->name) }}">
                                                     <img src="{{ asset('storage/thumbnail/'.$photo->name) }}" height="40" alt="image alt"/>
                                                 </a>
@@ -67,34 +69,34 @@
                                                 {{ $post->category->title }}
                                             </span>
                                         </td>
-
+                                        @if(Auth::user()->role == 0)
                                         <td>{{ $post->user->name }}</td>
+                                        @endif
                                         <td>
                                             <div class="btn-group">
                                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('post.show',$post->id) }}">
                                                     <i class="fas fa-info fa-fw"></i>
                                                 </a>
+                                                @can('view',$post)
                                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('post.edit',$post->id) }}">
                                                     <i class="fas fa-pencil-alt fa-fw"></i>
                                                 </a>
+                                                @endcan
+                                                @can('delete',$post)
                                                 <button form="deletePost{{$post->id}}" class="btn btn-sm btn-outline-primary">
                                                     <i class="fas fa-trash-alt fa-fw"></i>
                                                 </button>
+                                                @endcan
                                             </div>
+                                            @can('delete',$post)
                                             <form action="{{ route('post.destroy',$post->id) }}" id="deletePost{{ $post->id }}" method="post" class="d-none">
                                                 @csrf
                                                 @method('delete')
                                             </form>
+                                            @endcan
                                         </td>
                                         <td>
-                                            <p class="mb-0 small">
-                                                <i class="fas fa-calendar fa-fw"></i>
-                                                {{ $post->created_at->format('d / m / Y') }}
-                                            </p>
-                                            <p class="mb-0 small">
-                                                <i class="fas fa-clock fa-fw"></i>
-                                                {{ $post->created_at->format("h:i a") }}
-                                            </p>
+                                            {!! $post->show_created_at !!}
                                         </td>
                                     </tr>
                                 @empty
